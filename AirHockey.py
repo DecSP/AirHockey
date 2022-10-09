@@ -9,13 +9,15 @@ class AirHockey:
     goal_sound = load_sound(cn.AH_GOAL_SOUND)
     hit_sound = load_sound(cn.AH_HIT_SOUND)
 
-    def __init__(self, screen, color, stick1, stick2, puck):
+    def __init__(self, screen, color, stick1, stick2, puck, score, timer):
         self.screen = screen
         self.color = color
         self.s1 = stick1
         self.s2 = stick2
         self.puck = puck
         self.caption = 'Air Hockey'
+        self.score = score
+        self.timer = timer
 
     def render(self):
         """Прорисовка поля для игры, клюшек и шайбы"""
@@ -34,6 +36,8 @@ class AirHockey:
         self.s1.draw(self.screen)
         self.s2.draw(self.screen)
         self.puck.draw(self.screen)
+        self.score.update(self.screen)
+        self.timer.update(self.screen)
 
     def restart(self):
         """Перезапуск игры"""
@@ -43,12 +47,86 @@ class AirHockey:
 
     def goal(self):
         """Проверка на попадание в ворота"""
-        return ((self.puck.x - self.puck.radius <= 0)
-                and (self.puck.y >= cn.AH_GOAL_Y1)
-                and (self.puck.y <= cn.AH_GOAL_Y2)) \
-               or ((self.puck.x + self.puck.radius >= cn.WIDTH)
-                   and (self.puck.y >= cn.AH_GOAL_Y1) and (self.puck.y <= cn.AH_GOAL_Y2))
+        if (self.puck.x - self.puck.radius <= 0) \
+                and (self.puck.y >= cn.AH_GOAL_Y1) \
+                and (self.puck.y <= cn.AH_GOAL_Y2):
+            return 1
+        elif (self.puck.x + self.puck.radius >= cn.WIDTH) \
+                and (self.puck.y >= cn.AH_GOAL_Y1) \
+                and (self.puck.y <= cn.AH_GOAL_Y2):
+            return 2        
+        return -1   
 
+
+class Score:
+    def __init__(self):
+        # Player 1 is red, left player | Player 2 is blue, right player
+        self.score1 = 0
+        self.score2 = 0
+        self.font = pygame.font.SysFont("Arial", 75, bold=True)
+        self.text1 = self.font.render(str(self.score1), True, "RED")
+        self.text2 = self.font.render(str(self.score2), True, "BLUE")
+        #  Position
+        self.pos1 = (0,0)
+        self.updatePosition1()
+        self.pos2 = (cn.WIDTH // 2 + 20, 40)
+        
+    def updatePosition1(self):
+        self.text1Size = self.font.size(str(self.score1))
+        self.pos1 = (cn.WIDTH // 2 - self.text1Size[0] - 20, 40)
+
+
+    def display(self, screen):        
+        screen.blit(self.text1, self.pos1)
+        screen.blit(self.text2, self.pos2)
+
+    def update(self, screen):
+        self.display(screen)
+        self.text1 = self.font.render(str(self.score1), True, "RED")
+        self.text2 = self.font.render(str(self.score2), True, "BLUE")
+
+    def add(self, point, player=1):
+        if player == 1:
+            self.score1 += point
+            self.updatePosition1()
+        else:
+            self.score2 += point
+
+    def get_score(self):
+        return (self.score1, self.score2)
+
+    def get_score(self, player=1):
+        if player == 1:
+            return self.score1
+        elif player == 2:
+            return self.score2
+        return None
+    
+    def get_result(self):
+        if self.score1 > self.score2:
+            return 1
+        elif self.score1 < self.score2:
+            return 2
+        return 0
+
+class Timer:
+    def __init__(self):
+        self.time = 2.0
+        self.font = pygame.font.SysFont("Arial", 50, bold=True)
+        self.text = self.font.render("Time: {}s".format(int(self.time)), True, "PURPLE")
+
+    def display(self, screen):
+        screen.blit(self.text, (40, 40))
+
+    def update(self, screen):
+        self.display(screen)
+        self.text = self.font.render("Time: {}s".format(int(self.time)), True, "PURPLE")
+
+    def count_down(self, time):
+        self.time -= time
+    
+    def ping(self):
+        return self.time < 0
 
 class Stick:
     """Класс для клюшки в игре Аэро Хоккей"""

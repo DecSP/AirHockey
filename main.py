@@ -28,7 +28,7 @@ def terminate():
 
 
 def start_screen():
-    fon = pygame.transform.scale(load_image('start_screen.png'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(load_image('start_screen.jpg'), (WIDTH, HEIGHT))
     pygame.display.set_caption('Pygame Mini Games')
     screen.blit(fon, (0, 0))
     if START_MUSIC:
@@ -69,7 +69,7 @@ def paused():
         clock.tick(FPS)
         pygame.display.update()
 
-def game_over():
+def game_over(game):
     global is_gameover
 
     winner = AH_score.get_result()
@@ -101,14 +101,13 @@ def game_over():
     screen.blit(player2Result, player2ResultPos)
     
     while is_gameover:
-        print(is_gameover)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE: # reset game
                 is_gameover = False
-                print(is_gameover)
+                game.reset()
         clock.tick(FPS)
         pygame.display.update()
 
@@ -123,8 +122,8 @@ def start_game():
             if event.type == pygame.QUIT:
                 terminate()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    game.restart()
+                # if event.key == pygame.K_SPACE:
+                #     game.restart()
                 if event.key == pygame.K_ESCAPE:
                     #TODO
                     is_pause = not is_pause
@@ -136,10 +135,9 @@ def start_game():
                 paused()
             
             if AH_timer.ping():
-                AH_timer.time = 60
                 is_gameover = True
             if is_gameover:
-                game_over()
+                game_over(game)
             keys = pygame.key.get_pressed()
             # Player 1 input
             w = keys[pygame.K_w]

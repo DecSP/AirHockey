@@ -44,6 +44,16 @@ class AirHockey:
         self.puck.reset()
         self.s1.reset(cn.AH_STICK1X, cn.AH_STICK1Y)
         self.s2.reset(cn.AH_STICK2X, cn.AH_STICK2Y)
+        # self.score.reset()
+        # self.timer.reset()
+
+    def reset(self):
+        """Перезапуск игры"""
+        self.puck.reset()
+        self.s1.reset(cn.AH_STICK1X, cn.AH_STICK1Y)
+        self.s2.reset(cn.AH_STICK2X, cn.AH_STICK2Y)
+        self.score.reset()
+        self.timer.reset()
 
     def goal(self):
         """Проверка на попадание в ворота"""
@@ -71,6 +81,12 @@ class Score:
         self.updatePosition1()
         self.pos2 = (cn.WIDTH // 2 + 20, 40)
         
+    def reset(self):
+        self.score1 = 0
+        self.score2 = 0
+        self.updatePosition1()
+
+
     def updatePosition1(self):
         self.text1Size = self.font.size(str(self.score1))
         self.pos1 = (cn.WIDTH // 2 - self.text1Size[0] - 20, 40)
@@ -111,7 +127,7 @@ class Score:
 
 class Timer:
     def __init__(self):
-        self.time = 2.0
+        self.time = cn.DURATION_MATCH
         self.font = pygame.font.SysFont("Arial", 50, bold=True)
         self.text = self.font.render("Time: {}s".format(int(self.time)), True, "PURPLE")
 
@@ -127,6 +143,9 @@ class Timer:
     
     def ping(self):
         return self.time < 0
+    
+    def reset(self):
+        self.time = cn.DURATION_MATCH
 
 class Stick:
     """Класс для клюшки в игре Аэро Хоккей"""

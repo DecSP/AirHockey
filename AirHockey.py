@@ -1,4 +1,4 @@
-from load_sound import load_sound
+from load_file import load_sound
 import pygame
 import math
 import constants as cn

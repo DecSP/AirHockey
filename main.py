@@ -1,10 +1,10 @@
+import asyncio
 import random
 import sys
 import pygame
 from constants import *  
 from AirHockey import Stick, Puck, AirHockey, Score, Timer
-from load_image import load_image
-from load_sound import load_sound
+from load_file import load_image,load_sound
 # from spell import *
 
 pygame.init()
@@ -18,8 +18,7 @@ AH_puck = Puck(AH_PUCK_COLOR, WIDTH // 2, HEIGHT // 2)
 AH_score = Score()
 AH_timer = Timer()
 
-AH = AirHockey(screen, AH_FIELD_COLOR, AH_stick1, AH_stick2, AH_puck, AH_score, AH_timer)
-game = AH
+game = AirHockey(screen, AH_FIELD_COLOR, AH_stick1, AH_stick2, AH_puck, AH_score, AH_timer)
 
 spell1 = 0
 spell2 = 0
@@ -37,7 +36,7 @@ def terminate():
     sys.exit()
 
 
-def start_screen():
+async def start_screen():
     global game_mode
     fon = pygame.transform.scale(load_image('start_screen.jpg'), (WIDTH, HEIGHT))
     pygame.display.set_caption('Air Hockey')
@@ -90,8 +89,9 @@ def start_screen():
                 draw_button('2 Player',650,mousepos)
         pygame.display.flip()
         clock.tick(FPS)
+        await asyncio.sleep(0)
 
-def paused():
+async def paused():
     global is_pause
     # sound.stop("music")
     pausedFont = pygame.font.SysFont("CopperPlate Gothic", 150, bold=True)
@@ -116,8 +116,10 @@ def paused():
         # gameDisplay.fill(white)
         clock.tick(FPS)
         pygame.display.update()
+        await asyncio.sleep(0)
 
-def game_over():
+
+async def game_over():
     global duration_spell1, duration_spell2, cooldown_spell1, cooldown_spell2
 
     winner = AH_score.get_result()
@@ -161,6 +163,8 @@ def game_over():
                 return
         clock.tick(FPS)
         pygame.display.update()
+        await asyncio.sleep(0)
+
 
 def draw_process_bar():
     if spell1 > 0:
@@ -444,9 +448,8 @@ def delete_slow_char():
     game.s2.speed = AH_STICK_SPEED
 
 
-def start_game():
+async def start_game():
     global is_pause, is_gameover, game, cooldown_spell1, cooldown_spell2, spell1, spell2, duration_spell1, duration_spell2
-    game = AH
     game.reset()
     shuffle_spell(1)
     shuffle_spell(2)
@@ -479,7 +482,7 @@ def start_game():
         
         # print(spell1)
 
-        if game == AH:
+        if game == game:
             if is_pause:
                 paused()
             
@@ -580,9 +583,13 @@ def start_game():
         clock.tick(FPS)
         AH_timer.count_down(time_delta)
         pygame.display.flip()
+        await asyncio.sleep(0)
+        
 
+async def main():
+    while True:
+        await start_screen()
+        await start_game()
 
 if __name__ == '__main__':
-    while True:
-        start_screen()
-        start_game()
+    asyncio.run(main())

@@ -3,8 +3,7 @@ import sys
 import pygame
 from constants import *  
 from AirHockey import Stick, Puck, AirHockey, Score, Timer
-from load_image import load_image
-from load_sound import load_sound
+from load_file import load_image,load_sound
 # from spell import *
 
 pygame.init()
@@ -108,8 +107,7 @@ def paused():
     while is_pause:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                terminate()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 is_pause = False
                 # sound.play("music")

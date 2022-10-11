@@ -295,9 +295,9 @@ def call_fast_char(player):
 def call_slow_char(player):
     global game
     if player == 1:
-        game.s1.speed = game.s1.speed / 1.8
-    elif player == 2:
         game.s2.speed = game.s2.speed / 1.8
+    elif player == 2:
+        game.s1.speed = game.s1.speed / 1.8
 
 # def disorient(): pass
 # def no_spell(): pass

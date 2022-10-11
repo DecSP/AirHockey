@@ -10,21 +10,12 @@ def filename(name):
     if hasattr(sys, "frozen"):
         basedir = sys.prefix
     else:
-        basedir = sys.path[0]
-
+        return name
     filename = os.path.join(basedir, name)
-
-    if not os.access(filename, os.F_OK | os.R_OK):
-        print("Could not find file '%s'." % filename)
-        raise SystemExit
-
     return filename
 
 def load_image(name, colorkey=None):
     fullname = os.path.join(filename(LOAD_DIR), name)
-    if not os.path.isfile(fullname):
-        print(f"Image is not exist")
-        sys.exit()
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -37,8 +28,5 @@ def load_image(name, colorkey=None):
 
 def load_sound(name):
     fullname = os.path.join(filename(SOUND_DIR), name)
-    if not os.path.isfile(fullname):
-        print(f'File is not exist')
-        sys.exit()
-    sound = pygame.mixer.Sound(fullname)
+    sound = pygame.mixer.Sound(fullname[:-3]+'ogg')
     return sound

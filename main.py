@@ -117,12 +117,12 @@ def game_over(game):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE: # reset game
                 is_gameover = False
                 game.reset()
-                # duration_spell1 = 0
-                # duration_spell2 = 0
-                # cooldown_spell1 = 0
-                # cooldown_spell2 = 0
-                # shuffle_spell(1)
-                # shuffle_spell(2)
+                duration_spell1 = 0
+                duration_spell2 = 0
+                cooldown_spell1 = 0
+                cooldown_spell2 = 0
+                shuffle_spell(1)
+                shuffle_spell(2)
         clock.tick(FPS)
         pygame.display.update()
 
@@ -501,12 +501,12 @@ def start_game():
                     AH_score.add(1,1) # Player 1 scores
                 pygame.mixer.Sound.play(AirHockey.goal_sound)
                 game.restart()
-                duration_spell1 = 0
-                duration_spell2 = 0
-                cooldown_spell1 = 0
-                cooldown_spell2 = 0
-                shuffle_spell(1)
-                shuffle_spell(2)
+                # duration_spell1 = 0
+                # duration_spell2 = 0
+                # cooldown_spell1 = 0
+                # cooldown_spell2 = 0
+                # shuffle_spell(1)
+                # shuffle_spell(2)
             AH_puck.check()
             if AH_puck.check_collision(AH_stick1):  
                 pygame.mixer.Sound.play(AirHockey.hit_sound)

@@ -117,12 +117,12 @@ def game_over(game):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE: # reset game
                 is_gameover = False
                 game.reset()
-                duration_spell1 = 0
-                duration_spell2 = 0
-                cooldown_spell1 = 0
-                cooldown_spell2 = 0
-                shuffle_spell(1)
-                shuffle_spell(2)
+                # duration_spell1 = 0
+                # duration_spell2 = 0
+                # cooldown_spell1 = 0
+                # cooldown_spell2 = 0
+                # shuffle_spell(1)
+                # shuffle_spell(2)
         clock.tick(FPS)
         pygame.display.update()
 

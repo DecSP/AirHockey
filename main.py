@@ -536,7 +536,7 @@ def start_game():
                 up = not down
                 if right or abs(AH_stick2.y-AH_puck.y)<30: down=up=False
                 if  abs(AH_stick2.x-AH_puck.x)<10: right=left=False
-                # random direction
+                # random direction if not move
                 if up == down and left == right:
                     up = random.choice([True, False])
                     down = not up

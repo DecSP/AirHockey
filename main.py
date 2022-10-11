@@ -216,7 +216,7 @@ def call_fire_ball():
     global game
     game.puck.speed = game.puck.speed * 1.85
 
-def call_freeze_ball(player=1): #
+def call_freeze_ball(player): #
     global game, duration_spell1, duration_spell2
     game.puck.speed = 0
     if player == 1:
@@ -225,10 +225,10 @@ def call_freeze_ball(player=1): #
         duration_spell2 = 0
 
 
-def call_small_goal(player=1):
+def call_small_goal(player):
     global game
     x = 120
-    if player == 1: # opponen: Right
+    if player == 1: # left
         game.ah_goal_y1_left = HEIGHT // 2 - x // 2
         game.ah_goal_y2_left = HEIGHT // 2 + x // 2
         game.ah_goal_width_left = x
@@ -237,10 +237,10 @@ def call_small_goal(player=1):
         game.ah_goal_y2_right = HEIGHT // 2 + x // 2
         game.ah_goal_width_right = x
 
-def call_big_goal(player=1):
+def call_big_goal(player):
     global game
     x = 500
-    if player == 1: # opponen: Right
+    if player == 1: # opponent: Right
         game.ah_goal_y1_right = HEIGHT // 2 - x // 2
         game.ah_goal_y2_right = HEIGHT // 2 + x // 2
         game.ah_goal_width_right = x
@@ -249,17 +249,18 @@ def call_big_goal(player=1):
         game.ah_goal_y2_left = HEIGHT // 2 + x // 2
         game.ah_goal_width_left = x
 
-def call_small_char(player=1):
+def call_small_char(player):
     global game
     if player == 1:
-        game.s1.radius = game.s1.radius /2
-        game.s1.mass = game.s1.mass /2
-    elif player == 2:
         game.s2.radius = game.s1.radius /2
         game.s2.mass = game.s1.mass /2
+    elif player == 2:
+        game.s1.radius = game.s1.radius /2
+        game.s1.mass = game.s1.mass /2
+        
     
 
-def call_big_char(player=1):
+def call_big_char(player):
     global game
     if player==1:
         game.s1.radius = game.s1.radius * 2
@@ -276,7 +277,7 @@ def call_small_ball():
     global game
     game.puck.radius = game.puck.radius / 2
 
-def call_add_time(player=1): #
+def call_add_time(player): #
     global game, duration_spell1, duration_spell2
     game.timer.time = game.timer.time + 4
     if player == 1:
@@ -284,13 +285,19 @@ def call_add_time(player=1): #
     elif player == 2:
         duration_spell2 = 0
 
-def call_fast_char():
+def call_fast_char(player):
     global game
-    game.s1.speed = game.s1.speed * 1.8
+    if player == 1:
+        game.s1.speed = game.s1.speed * 1.8
+    elif player == 2:
+        game.s2.speed = game.s2.speed * 1.8
 
-def call_slow_char():
+def call_slow_char(player):
     global game
-    game.s2.speed = game.s2.speed * 1.8
+    if player == 1:
+        game.s1.speed = game.s1.speed / 1.8
+    elif player == 2:
+        game.s2.speed = game.s2.speed / 1.8
 
 # def disorient(): pass
 # def no_spell(): pass
@@ -327,11 +334,11 @@ def call_spell(player=1):
     elif spell_idx == 2:
         call_freeze_ball(player)
     elif spell_idx == 3:
-        call_small_goal()
+        call_small_goal(player)
     elif spell_idx == 4:
-        call_big_goal()
+        call_big_goal(player)
     elif spell_idx == 5:
-        call_small_char(3-player)
+        call_small_char(player)
     elif spell_idx == 6:
         call_big_char(player)
     elif spell_idx == 7:
@@ -341,9 +348,9 @@ def call_spell(player=1):
     elif spell_idx == 9:
         call_add_time(player)
     elif spell_idx == 10:
-        call_fast_char()
+        call_fast_char(player)
     elif spell_idx == 11:
-        call_slow_char()
+        call_slow_char(player)
 
 def delete_spell(player = 1):
     global game, spell1, spell2
@@ -363,7 +370,7 @@ def delete_spell(player = 1):
     elif spell_idx == 4:
         delete_big_goal()
     elif spell_idx == 5:
-        delete_small_char(3-player)
+        delete_small_char(player)
     elif spell_idx == 6:
         delete_big_char(player)
     elif spell_idx == 7:
@@ -402,24 +409,21 @@ def delete_big_goal():
     game.ah_goal_width_left = AH_GOAL_WIDTH
     game.ah_goal_width_right = AH_GOAL_WIDTH
 
-def delete_small_char(player=1):
+def delete_small_char(player):
     global game
-    if player == 1:
-        game.s1.radius = AH_STICK_RADIUS
-        game.s1.mass = AH_STICK_MASS
-    elif player == 2:
-        game.s2.radius = AH_STICK_RADIUS
-        game.s2.mass = AH_STICK_MASS
+    game.s1.radius = AH_STICK_RADIUS
+    game.s1.mass = AH_STICK_MASS
+    game.s2.radius = AH_STICK_RADIUS
+    game.s2.mass = AH_STICK_MASS
+        
     
 
-def delete_big_char(player=1):
+def delete_big_char(player):
     global game
-    if player==1:
-        game.s1.radius = AH_STICK_RADIUS
-        game.s1.mass = AH_STICK_MASS
-    elif player == 2:
-        game.s2.radius = AH_STICK_RADIUS
-        game.s2.mass = AH_STICK_MASS
+    game.s1.radius = AH_STICK_RADIUS
+    game.s1.mass = AH_STICK_MASS
+    game.s2.radius = AH_STICK_RADIUS
+    game.s2.mass = AH_STICK_MASS
 
 def delete_big_ball():
     global game
@@ -433,8 +437,10 @@ def delete_add_time(): pass
 
 def delete_fast_char():
     game.s1.speed = AH_STICK_SPEED
+    game.s2.speed = AH_STICK_SPEED
 
 def delete_slow_char(): 
+    game.s1.speed = AH_STICK_SPEED
     game.s2.speed = AH_STICK_SPEED
 
 

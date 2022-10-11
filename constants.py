@@ -12,7 +12,9 @@ COLORS = {'red': (255, 102, 102),
           'black': (12, 12, 12),
           'grey': (52, 52, 52),
           'light-red': (255, 0, 0),
-          'dark-blue': (0, 0, 255)}
+          'dark-blue': (0, 0, 255),
+          'yellow': (255,255,0)
+          }
 
 WIN_SOUND = 'win.mp3'
 ICON_IMAGE = 'game-controller.png'

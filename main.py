@@ -1,3 +1,4 @@
+import random
 import sys
 import pygame
 from constants import *  
@@ -21,6 +22,7 @@ AH = AirHockey(screen, AH_FIELD_COLOR, AH_stick1, AH_stick2, AH_puck, AH_score, 
 
 is_pause = False
 is_gameover = False
+game_mode = ""
 
 def terminate():
     pygame.quit()
@@ -28,18 +30,56 @@ def terminate():
 
 
 def start_screen():
+    global game_mode
     fon = pygame.transform.scale(load_image('start_screen.jpg'), (WIDTH, HEIGHT))
-    pygame.display.set_caption('Pygame Mini Games')
-    screen.blit(fon, (0, 0))
+    pygame.display.set_caption('Air Hockey')
+    
+    
+    def draw_button(text,button_y,mousepos):
+        global game_mode
+        button_width, button_height = 300,100
+        button_x = (WIDTH-button_width)//2
+        
+        if 0<mousepos[0]-button_x<button_width and 0<mousepos[1]-button_y<button_height:
+            game_mode=text[0]
+            button_col,buttontext_col=COLORS['dark green'],COLORS['yellow']
+        else:
+            button_col,buttontext_col=COLORS['black'],COLORS['white']
+
+        pygame.draw.rect(screen,button_col,pygame.Rect(button_x,button_y,button_width,button_height))
+        buttonFont = pygame.font.SysFont("CopperPlate Gothic",50 , bold=True)
+        buttonText = buttonFont.render(text, True,buttontext_col)
+        buttonTextSize = buttonFont.size(text)
+        buttontext_x = (WIDTH-buttonTextSize[0])//2
+        screen.blit(
+            buttonText,
+            (
+                buttontext_x,
+                button_y+15
+            ),
+        )
+
     if START_MUSIC:
         pygame.mixer.Sound.play(load_sound('start.mp3'))
+    screen.blit(fon, (0, 0))
+    mousepos = pygame.mouse.get_pos()
+    game_mode=""
+    draw_button('1 Player',500,mousepos)
+    draw_button('2 Player',650,mousepos)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                pygame.mixer.stop()
-                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if game_mode!="":
+                    pygame.mixer.stop()
+                    return
+            elif event.type == pygame.MOUSEMOTION:
+                screen.blit(fon, (0, 0))
+                mousepos = event.pos
+                game_mode=""
+                draw_button('1 Player',500,mousepos)
+                draw_button('2 Player',650,mousepos)
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -107,7 +147,6 @@ def game_over(game):
                 quit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE: # reset game
                 is_gameover = False
-                game.reset()
         clock.tick(FPS)
         pygame.display.update()
 
@@ -116,6 +155,7 @@ def game_over(game):
 def start_game():
     global is_pause, is_gameover
     game = AH
+    game.reset()
     while True:
         time_delta = clock.get_time() / 1000
         for event in pygame.event.get():
@@ -138,6 +178,7 @@ def start_game():
                 is_gameover = True
             if is_gameover:
                 game_over(game)
+                return
             keys = pygame.key.get_pressed()
             # Player 1 input
             w = keys[pygame.K_w]
@@ -145,10 +186,18 @@ def start_game():
             d = keys[pygame.K_d]
             a = keys[pygame.K_a]
             # Player 2 input
-            up = keys[pygame.K_UP]
-            down = keys[pygame.K_DOWN]
-            right = keys[pygame.K_RIGHT]
-            left = keys[pygame.K_LEFT]
+            if game_mode=='2':
+                up = keys[pygame.K_UP]
+                down = keys[pygame.K_DOWN]
+                right = keys[pygame.K_RIGHT]
+                left = keys[pygame.K_LEFT]
+            else:
+                right = AH_stick2.x < AH_puck.x+60
+                left = not right
+                down = AH_stick2.y < AH_puck.y
+                up = not down
+                if right or abs(AH_stick2.y-AH_puck.y)<30: down=up=False
+                if  abs(AH_stick2.x-AH_puck.x)<10: right=left=False
             # update player move 1
             AH_stick1.move(w, s, a, d, time_delta)
             AH_stick1.check_vertical()
@@ -187,5 +236,6 @@ def start_game():
 
 
 if __name__ == '__main__':
-    start_screen()
-    start_game()
+    while True:
+        start_screen()
+        start_game()

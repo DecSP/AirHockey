@@ -118,7 +118,7 @@ def paused():
         pygame.display.update()
 
 def game_over():
-    global is_gameover, duration_spell1, duration_spell2, cooldown_spell1, cooldown_spell2
+    global duration_spell1, duration_spell2, cooldown_spell1, cooldown_spell2
 
     winner = AH_score.get_result()
     player1Text = ""
@@ -148,19 +148,17 @@ def game_over():
     screen.blit(player1Result, player1ResultPos)
     screen.blit(player2Result, player2ResultPos)
     
-    while is_gameover:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE: # reset game
-                is_gameover = False
                 duration_spell1 = 0
                 duration_spell2 = 0
                 cooldown_spell1 = 0
                 cooldown_spell2 = 0
-                shuffle_spell(1)
-                shuffle_spell(2)
+                return
         clock.tick(FPS)
         pygame.display.update()
 
@@ -481,20 +479,7 @@ def start_game():
             
             if AH_timer.ping():
                 is_gameover = True
-            if is_gameover:
-                game_over()
-                return 
-            if spell1 == 0:
-                cooldown_spell1 -= time_delta
-                if cooldown_spell1 <= 0:
-                    print("[Spell 1] Ready")
-                    shuffle_spell(1)
-
-            if spell2 == 0:
-                cooldown_spell2 -= time_delta
-                if cooldown_spell2 <= 0:
-                    print("[Spell 2] Ready")
-                    shuffle_spell(2)
+                game_over() 
 
             if spell1 > 0: # Cooldown
                 duration_spell1 -= time_delta
@@ -509,6 +494,22 @@ def start_game():
                     print("[Spell 2] Ended")
                     delete_spell(2)
                     spell2 = 0
+
+            if is_gameover:
+                is_gameover=False
+                return
+
+            if spell1 == 0:
+                cooldown_spell1 -= time_delta
+                if cooldown_spell1 <= 0:
+                    print("[Spell 1] Ready")
+                    shuffle_spell(1)
+
+            if spell2 == 0:
+                cooldown_spell2 -= time_delta
+                if cooldown_spell2 <= 0:
+                    print("[Spell 2] Ready")
+                    shuffle_spell(2)
 
             keys = pygame.key.get_pressed()
             # Player 1 input
@@ -563,8 +564,7 @@ def start_game():
                 pygame.mixer.Sound.play(AirHockey.hit_sound)
             if AH_puck.check_collision(AH_stick2):  
                 pygame.mixer.Sound.play(AirHockey.hit_sound)
-        
-        
+            
         
 
         pygame.display.set_caption(game.caption)

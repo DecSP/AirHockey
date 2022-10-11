@@ -27,10 +27,12 @@ class AirHockey:
     def render(self):
         self.screen.fill(self.color)
         pygame.draw.rect(self.screen, cn.AH_BORDER_COLOR, (0, 0, cn.WIDTH, cn.HEIGHT), 15)
-        pygame.draw.line(self.screen, cn.COLORS['red'], (0, cn.AH_GOAL_Y1),
-                         (0, cn.AH_GOAL_Y1 + cn.AH_GOAL_WIDTH), 15)
-        pygame.draw.line(self.screen, cn.COLORS['blue'], (cn.WIDTH - 1, cn.AH_GOAL_Y1),
-                         (cn.WIDTH - 1, cn.AH_GOAL_Y1 + cn.AH_GOAL_WIDTH), 15)
+        # Left
+        pygame.draw.line(self.screen, cn.COLORS['red'], (0, self.ah_goal_y1_left),
+                         (0, self.ah_goal_y1_left + self.ah_goal_width_left), 15)
+        # Right
+        pygame.draw.line(self.screen, cn.COLORS['blue'], (cn.WIDTH - 1, self.ah_goal_y1_right),
+                         (cn.WIDTH - 1, self.ah_goal_y1_right + self.ah_goal_width_right), 15)
         pygame.draw.line(self.screen, cn.AH_DIVIDING_LINE_COLOR, (cn.WIDTH // 2, 10),
                          (cn.WIDTH // 2, cn.HEIGHT - 10), 5)
         self.s1.draw(self.screen)

@@ -7,10 +7,9 @@ pygame.init()
 
 
 def load_sound(name):
-    """Загрузка звука из директории constants.SOUND_DIR"""
     fullname = os.path.join(SOUND_DIR, name)
     if not os.path.isfile(fullname):
-        print(f'Файл с названием {name} не найден')
+        print(f'File is not exist')
         sys.exit()
     sound = pygame.mixer.Sound(fullname)
     return sound

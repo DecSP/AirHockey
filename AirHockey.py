@@ -17,6 +17,13 @@ class AirHockey:
         self.score = score
         self.timer = timer
 
+        self.ah_goal_y1_left = cn.AH_GOAL_Y1
+        self.ah_goal_y2_left = cn.AH_GOAL_Y2
+        self.ah_goal_y1_right = cn.AH_GOAL_Y1
+        self.ah_goal_y2_right = cn.AH_GOAL_Y2
+        self.ah_goal_width_left = cn.AH_GOAL_WIDTH
+        self.ah_goal_width_right = cn.AH_GOAL_WIDTH
+
     def render(self):
         self.screen.fill(self.color)
         pygame.draw.rect(self.screen, cn.AH_BORDER_COLOR, (0, 0, cn.WIDTH, cn.HEIGHT), 15)
@@ -36,8 +43,6 @@ class AirHockey:
         self.puck.reset()
         self.s1.reset(cn.AH_STICK1X, cn.AH_STICK1Y)
         self.s2.reset(cn.AH_STICK2X, cn.AH_STICK2Y)
-        # self.score.reset()
-        # self.timer.reset()
 
     def reset(self):
         self.puck.reset()
@@ -48,12 +53,12 @@ class AirHockey:
 
     def goal(self):
         if (self.puck.x - self.puck.radius <= 0) \
-                and (self.puck.y >= cn.AH_GOAL_Y1) \
-                and (self.puck.y <= cn.AH_GOAL_Y2):
+                and (self.puck.y >= self.ah_goal_y1_left) \
+                and (self.puck.y <= self.ah_goal_y2_left):
             return 1
         elif (self.puck.x + self.puck.radius >= cn.WIDTH) \
-                and (self.puck.y >= cn.AH_GOAL_Y1) \
-                and (self.puck.y <= cn.AH_GOAL_Y2):
+                and (self.puck.y >= self.ah_goal_y1_right) \
+                and (self.puck.y <= self.ah_goal_y2_right):
             return 2        
         return -1   
 
@@ -184,7 +189,6 @@ class Stick:
 
 
 class Puck:
-
     def __init__(self, color, x, y):
         self.x, self.y = x, y
         self.color = color

@@ -536,6 +536,12 @@ def start_game():
                 up = not down
                 if right or abs(AH_stick2.y-AH_puck.y)<30: down=up=False
                 if  abs(AH_stick2.x-AH_puck.x)<10: right=left=False
+                # random direction
+                if up == down and left == right:
+                    up = random.choice([True, False])
+                    down = not up
+                    left = random.choice([True, False])
+                    right = not left
                 # [Spell 2]
                 if duration_spell2 <= 0 and cooldown_spell2 <= 0:
                     print("CPU: [Spell 2]", SPELL_LIST[abs(spell2)-1])

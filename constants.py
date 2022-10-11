@@ -17,7 +17,7 @@ COLORS = {'red': (255, 102, 102),
 WIN_SOUND = 'win.mp3'
 ICON_IMAGE = 'game-controller.png'
 
-DURATION_MATCH = 10.0 #60.0
+DURATION_MATCH = 60.0 #60.0
 
 AH_STICK_RADIUS = 40
 AH_STICK_SPEED = 400

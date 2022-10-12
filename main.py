@@ -487,7 +487,7 @@ async def start_game():
             
             if AH_timer.ping():
                 is_gameover = True
-                game_over() 
+                await game_over() 
 
             if spell1 > 0: # Cooldown
                 duration_spell1 -= time_delta

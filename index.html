@@ -1,11 +1,11 @@
-<html lang="en-us"><script src="https://pygame-web.github.io/archives/0.5/pythons.js" type=module id="site" data-src="vtx,fs,snd,gui" async defer>#<!--
+<html lang="en-us"><script src="https://pygame-web.github.io/archives/0.4/pythons.js" type=module id="site" data-src="vtx,fs,snd,gui" async defer>#<!--
 
 print("""
 Loading airhockey from airhockey.apk
-    Pygbag Version : 0.5.0
-    Template Version : 0.5.0
+    Pygbag Version : 0.4.0
+    Template Version : 0.3.0
     Python  : 3.11
-    CDN URL : https://pygame-web.github.io/archives/0.5/
+    CDN URL : https://pygame-web.github.io/archives/0.4/
     Screen  : {{cookiecutter.width}}x{{cookiecutter.height}}
     Title   : airhockey
     Folder  : airhockey
@@ -14,6 +14,11 @@ Loading airhockey from airhockey.apk
 
 """)
 
+import sys
+import asyncio
+import platform
+import json
+from pathlib import Path
 
 # screen pixels (real, hardware)
 WIDTH=1024  # {{cookiecutter.width}}
@@ -50,17 +55,8 @@ def uy(*argv):
 
 # do not rename
 async def sitecustomize():
-
-    import sys
-    import asyncio
-    import platform
-    import json
-    from pathlib import Path
-
-
-
+    global __file__
     import embed
-
 
     platform.document.body.style.background = "#7f7f7f"
 
@@ -146,36 +142,25 @@ async def sitecustomize():
     # start async top level machinery and add a console.
     await TopLevel_async_handler.start_toplevel(platform.shell, console=window.python.config.debug)
 
-    # now that apk is mounted we have access to font cache
-    # but we need to fill __file__ that is not yet set
-    __import__(__name__).__file__ = main
+    # get a relevant list of modules to import
+    __file__ = main
+
+    imports_ready = False
+
+    async def imports():
+        nonlocal imports_ready
+        await TopLevel_async_handler.async_imports(*TopLevel_async_handler.list_imports(None, main))
+        imports_ready = True
 
 
-    # now make a prompt
-    fnt = pygame.sysfont.SysFont("freesans",  uy(80) )
+    await imports()
 
-
-    # get a relevant list of modules likely to be imported
-    # and prefetch them if found in repo trees
-    async def prepare_imports():
-        nonlocal fnt
-        def ui_callback(pkg, error=None):
-            if error:
-                prompt = fnt.render(f"{error}", True, "black")
-            else:
-                prompt = fnt.render(f"Setting [{pkg}] up", True, "black")
-            pg_bar(track.len)
-            screen.blit(prompt, ( marginx+ ux(80), marginy - uy(10) ) )
-            compose()
-
-        await TopLevel_async_handler.async_imports(*TopLevel_async_handler.list_imports(None, main), callback=ui_callback)
-        PyConfig.imports_ready = True
-
-    # download pkg, install them but don't import them.
-    await prepare_imports()
-
-    # test/wait if user media interaction required
+    # test/wait user media interaction
     if not platform.window.MM.UME:
+
+        # now that apk is mounted we have access to font cache
+        # but we need to fill __file__ that is not yet set
+        __import__(__name__).__file__ = main
 
         # now make a prompt
         fnt = pygame.sysfont.SysFont("freesans",  uy(80) )
@@ -189,59 +174,31 @@ async def sitecustomize():
         while not platform.window.MM.UME:
             await asyncio.sleep(.1)
 
-    # cleanup
     screen.fill( (0,0,0,0) )
     pygame.display.flip()
 
-    code = ""
-
-    def check_code(file_name):
-        nonlocal code
-        maybe_sync = False
-        has_pygame = False
-        with open(file_name,"r") as code_file:
-            code = code_file.read()
-            if code.find('asyncio.run')<0:
-                print("possibly synchronous code found")
-                maybe_sync = True
-
-            has_pygame =  code.find('display.flip(')>0 or code.find('display.update(')>0
-
-            if maybe_sync and has_pygame:
-                return False
-        return True
-
-    if check_code(main):
-        print("145: running main and resuming EventTarget in a few seconds")
-        aio.defer(execfile, (main,), {} )
-
-        # if you don't reach that step
-        # your main.py has an infinite sync loop somewhere !
-        print("150: ready")
 
 
-        # makes all queued events arrive after program has looped a few cycles
-        # note that you need a call to asyncio.run in your main to continue past
-        # that check
-        while not aio.run_called:
-            await asyncio.sleep(.1)
 
-        aio.create_task(platform.EventTarget.process())
+    print("145: running main and resuming EventTarget in a few seconds")
+    aio.defer(execfile, (main,), {} )
 
-        pdb("platform event loop started")
+    # if you don't reach that step
+    # your main.py has an infinite sync loop somewhere !
+    print("150: ready")
 
 
-    else:
-        for base in ('pygame','pg'):
-            for func in ('flip','update'):
-                block =  f'{base}.display.{func}()'
-                code = code.replace( block, ff'{block};await asyncio.sleep(0)')
+    # makes all queued events arrive after program has looped a few cycles
+    # note that you need a call to asyncio.run in your main to continue past
+    # that check
+    while not aio.run_called:
+        await asyncio.sleep(.1)
 
-        pdb(" -> won't run synchronous code with a pygame loop")
-        #if await TopLevel_async_handler.async_imports("matplotlib"):
-        #    import matplotlib
+    aio.create_task(platform.EventTarget.process())
 
-        shell.debug()
+    print("platform event loop started")
+
+
 
 
 asyncio.run( sitecustomize() )
@@ -295,7 +252,7 @@ config = {
     can_close : 0,
     archive : "airhockey",
     gui_debug : 3,
-    cdn : "https://pygame-web.github.io/archives/0.5/",
+    cdn : "https://pygame-web.github.io/archives/0.4/",
     autorun : 0,
     PYBUILD : "3.11"
 }
@@ -308,10 +265,11 @@ config = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.5/pythonrc.py">
-    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.5/vt/xterm.js">
-    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.5/vt/xterm-addon-image.js">
-    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.5/vt/xterm-addon-image.js">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.4/pythonrc.py">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.4/browserfs.min.js">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.4/xtermjsixel/xterm.js">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.4/xtermjsixel/xterm-addon-image.js">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.4/xtermjsixel/xterm-addon-image-worker.js">
 
 
     <link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
@@ -393,7 +351,7 @@ config = {
         }
     </style>
 
-    <script src="https://pygame-web.github.io/archives/0.5//browserfs.min.js"></script>
+    <script src="https://pygame-web.github.io/archives/0.4//browserfs.min.js"></script>
 
 </head>
 
@@ -406,6 +364,7 @@ config = {
             <progress value="0" max="100" id="progress"></progress>
         </div>
     </div>
+
 
 
     <canvas class="emscripten" id="canvas"
@@ -453,7 +412,7 @@ frameborder="1"
                 mozallowfullscreen="true"
                 sandbox="allow-same-origin allow-top-navigation allow-scripts allow-pointer-lock"
                 allow="autoplay; fullscreen *; geolocation; microphone; camera; midi; monetization; xr-spatial-tracking; gamepad; gyroscope; accelerometer; xr; cross-origin-isolated"
-                src="https://pygame-web.github.io/archives/0.5/empty.html"
+                src="https://pygame-web.github.io/archives/0.4/empty.html"
                 scrolling="yes">
             </iframe>
         </div>

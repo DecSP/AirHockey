@@ -483,7 +483,7 @@ async def start_game():
 
         if game == game:
             if is_pause:
-                paused()
+                await paused()
             
             if AH_timer.ping():
                 is_gameover = True
